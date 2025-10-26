@@ -707,7 +707,7 @@ pub mod bwe;
 mod sctp;
 use sctp::{RtcSctp, SctpEvent};
 
-mod sdp;
+pub mod sdp;
 
 pub mod format;
 use format::CodecConfig;

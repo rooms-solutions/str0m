@@ -1,16 +1,15 @@
+//! SDP (Session Description Protocol) parsing.
+
 use std::fmt;
 use std::ops::Deref;
 
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
 mod data;
-pub(crate) use data::{FormatParam, Sdp, Session, SessionAttribute, Setup};
-pub(crate) use data::{MediaAttribute, MediaLine, MediaType, Msid, Proto};
-pub(crate) use data::{RestrictionId, Simulcast, SimulcastGroups};
+pub use data::{FormatParam, Sdp, Session, SessionAttribute, Setup};
+pub use data::{MediaAttribute, MediaLine, MediaType, Msid, Proto};
+pub use data::{RestrictionId, Simulcast, SimulcastGroups, RtpMap};
 pub(crate) use parser::parse_candidate;
-
-#[cfg(test)]
-pub(crate) use data::RtpMap;
 
 mod parser;
 
@@ -33,8 +32,8 @@ impl SdpOffer {
         self.0.to_string()
     }
 
-    #[cfg(test)]
-    pub(crate) fn into_inner(self) -> Sdp {
+    /// Turn this offer into the inner Sdp.
+    pub fn into_inner(self) -> Sdp {
         self.0
     }
 }
@@ -53,6 +52,11 @@ impl SdpAnswer {
     /// Turns this answer into an SDP string, without any JSON wrapping.
     pub fn to_sdp_string(&self) -> String {
         self.0.to_string()
+    }
+
+    /// Turn this answer into the inner Sdp.
+    pub fn into_inner(self) -> Sdp {
+        self.0
     }
 }
 

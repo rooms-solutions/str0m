@@ -1,4 +1,4 @@
-#![allow(clippy::single_match)]
+#![allow(clippy::single_match, missing_docs)]
 
 use combine::EasyParser;
 use std::collections::HashSet;
@@ -24,33 +24,33 @@ pub struct Sdp {
 }
 
 impl Sdp {
-    pub(crate) fn parse(input: &str) -> Result<Sdp, SdpError> {
+    pub fn parse(input: &str) -> Result<Sdp, SdpError> {
         sdp_parser()
             .easy_parse(input)
             .map(|(sdp, _)| sdp)
             .map_err(|e| SdpError::ParseError(e.to_string()))
     }
 
-    pub(crate) fn assert_consistency(&self) -> Result<(), SdpError> {
+    pub fn assert_consistency(&self) -> Result<(), SdpError> {
         match self.do_assert_consistency() {
             None => Ok(()),
             Some(error) => Err(SdpError::Inconsistent(error)),
         }
     }
 
-    pub(crate) fn fingerprint(&self) -> Option<Fingerprint> {
+    pub fn fingerprint(&self) -> Option<Fingerprint> {
         self.session
             .fingerprint()
             .or_else(|| self.media_lines.iter().find_map(|m| m.fingerprint()))
     }
 
-    pub(crate) fn ice_creds(&self) -> Option<IceCreds> {
+    pub fn ice_creds(&self) -> Option<IceCreds> {
         self.session
             .ice_creds()
             .or_else(|| self.media_lines.iter().find_map(|m| m.ice_creds()))
     }
 
-    pub(crate) fn ice_candidates(&self) -> impl Iterator<Item = &Candidate> {
+    pub fn ice_candidates(&self) -> impl Iterator<Item = &Candidate> {
         let mut candidates: HashSet<&Candidate> = HashSet::new();
 
         // Session level ice candidates.
@@ -64,7 +64,7 @@ impl Sdp {
         candidates.into_iter()
     }
 
-    pub(crate) fn setup(&self) -> Option<Setup> {
+    pub fn setup(&self) -> Option<Setup> {
         self.session
             .setup()
             .or_else(|| self.media_lines.iter().find_map(|m| m.setup()))
@@ -964,7 +964,8 @@ impl fmt::Display for FormatParam {
 }
 
 impl PayloadParams {
-    pub(crate) fn as_media_attrs(&self, attrs: &mut Vec<MediaAttribute>) {
+    /// Convert to media attributes for inclusion in an m= line.
+    pub fn as_media_attrs(&self, attrs: &mut Vec<MediaAttribute>) {
         attrs.push(MediaAttribute::RtpMap {
             pt: self.pt,
             value: self.spec.into(),
